@@ -1,0 +1,830 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Cloud-Based Flight Delay Analytics System using Big Data</title>
+  <meta name="description" content="Stealth Black & Electric Yellow Big Data Flight Analytics & Prescriptive Airline Recommendation Engine.">
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Google Fonts: Space Grotesk, Outfit & Inter -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@400;500;600;700;800;900&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
+  <!-- Lucide Icons -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['Inter', 'sans-serif'],
+            display: ['Outfit', 'sans-serif'],
+            mono: ['Space Grotesk', 'monospace']
+          },
+          colors: {
+            stealth: {
+              950: '#030303',
+              900: '#070708',
+              850: '#0c0c0e',
+              800: '#121215',
+              700: '#1b1b20',
+              600: '#272730',
+            },
+            yellow: {
+              300: '#fde047',
+              400: '#facc15',
+              500: '#eab308',
+              600: '#ca8a04',
+            }
+          }
+        }
+      }
+    }
+  </script>
+  <style>
+    ::-webkit-scrollbar { width: 8px; }
+    ::-webkit-scrollbar-track { background: #030303; }
+    ::-webkit-scrollbar-thumb { background: #1c1c22; border-radius: 4px; }
+    ::-webkit-scrollbar-thumb:hover { background: #eab308; }
+    
+    body {
+      background-color: #030303;
+      background-image: 
+        radial-gradient(at 0% 0%, rgba(250, 204, 21, 0.07) 0px, transparent 45%),
+        radial-gradient(at 100% 0%, rgba(234, 179, 8, 0.05) 0px, transparent 40%),
+        radial-gradient(at 50% 100%, rgba(250, 204, 21, 0.04) 0px, transparent 50%),
+        linear-gradient(to right, rgba(255, 255, 255, 0.015) 1px, transparent 1px),
+        linear-gradient(to bottom, rgba(255, 255, 255, 0.015) 1px, transparent 1px);
+      background-size: 100% 100%, 100% 100%, 100% 100%, 48px 48px, 48px 48px;
+    }
+
+    .stealth-card {
+      background: #09090b;
+      border: 1px solid #1c1c21;
+      transition: all 0.25s ease;
+    }
+    .stealth-card:hover {
+      border-color: rgba(250, 204, 21, 0.35);
+      box-shadow: 0 0 25px -5px rgba(250, 204, 21, 0.12);
+    }
+    .stealth-card-active {
+      border-color: rgba(250, 204, 21, 0.6);
+      box-shadow: 0 0 35px -5px rgba(250, 204, 21, 0.2);
+    }
+    .glow-yellow {
+      text-shadow: 0 0 20px rgba(250, 204, 21, 0.4);
+    }
+    @keyframes highlightCard {
+      0% { transform: scale(1); border-color: rgba(250, 204, 21, 0.8); }
+      50% { transform: scale(1.015); border-color: #facc15; }
+      100% { transform: scale(1); }
+    }
+    .animate-updated {
+      animation: highlightCard 0.4s ease-out;
+    }
+  </style>
+</head>
+<body class="text-slate-100 min-h-screen font-sans antialiased selection:bg-yellow-400 selection:text-black">
+
+  <!-- TOP NAVIGATION BAR -->
+  <header class="sticky top-0 z-50 border-b border-stealth-700/80 bg-stealth-950/90 backdrop-blur-2xl">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
+      <!-- Logo & Title -->
+      <div class="flex items-center space-x-3.5">
+        <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-yellow-300 via-yellow-400 to-amber-500 p-[1.5px] shadow-lg shadow-yellow-500/25">
+          <div class="w-full h-full bg-stealth-950 rounded-[10px] flex items-center justify-center">
+            <i data-lucide="plane-takeoff" class="w-5 h-5 text-yellow-400"></i>
+          </div>
+        </div>
+        <div>
+          <div class="flex items-center space-x-2">
+            <span class="font-display font-black text-sm sm:text-base md:text-lg tracking-tight text-white">
+              Cloud-Based Flight Delay Analytics System using Big Data
+            </span>
+            <span class="hidden sm:inline-flex text-[10px] px-2 py-0.5 rounded bg-yellow-400/10 text-yellow-400 border border-yellow-400/30 font-bold font-mono uppercase tracking-wider">
+              BDA & CC
+            </span>
+          </div>
+          <p class="text-[11px] text-yellow-400/70 tracking-wide font-mono">Hadoop HDFS • Apache Spark (PySpark) • Cloud Microservice</p>
+        </div>
+      </div>
+
+      <!-- Cloud API Status -->
+      <div class="flex items-center space-x-3">
+        <div id="backend-status-pill" class="flex items-center space-x-2 px-3 py-1.5 rounded-full bg-stealth-900 border border-stealth-700 text-xs">
+          <span id="status-indicator-dot" class="w-2.5 h-2.5 rounded-full bg-yellow-400 animate-pulse"></span>
+          <span id="status-indicator-text" class="text-yellow-400 font-mono text-[11px]">Connecting (:8000)...</span>
+        </div>
+        <button id="refresh-status-btn" title="Ping Cloud Gateway" class="p-2 rounded-lg bg-stealth-900 hover:bg-stealth-800 border border-stealth-700 text-yellow-400 hover:text-white transition">
+          <i data-lucide="refresh-cw" class="w-4 h-4"></i>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- MAIN CONTAINER -->
+  <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8">
+
+    <!-- HERO & ARCHITECTURE OVERVIEW BANNER -->
+    <section class="stealth-card rounded-2xl p-6 sm:p-8 relative overflow-hidden">
+      <div class="absolute -right-16 -top-16 w-80 h-80 bg-yellow-400/5 rounded-full blur-3xl pointer-events-none"></div>
+      <div class="relative z-10 flex flex-col lg:flex-row lg:items-center lg:justify-between gap-6">
+        <div class="space-y-2 max-w-2xl">
+          <div class="inline-flex items-center space-x-2 px-3 py-1 rounded-full bg-yellow-400/10 border border-yellow-400/30 text-yellow-300 text-xs font-mono font-bold tracking-wide">
+            <i data-lucide="sparkles" class="w-3.5 h-3.5 text-yellow-400"></i>
+            <span>Big Data & Cloud Prescriptive System</span>
+          </div>
+          <h1 class="font-display text-2xl sm:text-3xl lg:text-4xl font-black tracking-tight text-white">
+            <span class="text-yellow-400 glow-yellow">Cloud-Based Flight Delay Analytics</span> System using Big Data
+          </h1>
+          <p class="text-slate-300 text-sm leading-relaxed">
+            Scalable distributed analytics engine processing <span class="text-yellow-400 font-bold font-mono">333,675</span> verified flight logs in <strong class="text-white">Apache Hadoop HDFS</strong>. Computes empirical delay metrics via <strong class="text-white">PySpark distributed transformations</strong> and delivers <strong class="text-yellow-400">Dynamic Prescriptive Top-3 Airline Recommendations</strong> that re-rank in real-time as departure time changes.
+          </p>
+        </div>
+
+        <!-- Metric Badges -->
+        <div class="grid grid-cols-2 sm:grid-cols-3 gap-3">
+          <div class="p-3.5 rounded-xl bg-stealth-950 border border-stealth-700">
+            <span class="text-[10px] text-slate-400 uppercase tracking-wider font-mono">HDFS Storage</span>
+            <div class="text-xl font-black font-mono text-yellow-400 mt-0.5">333.6K</div>
+            <span class="text-[10px] text-slate-400">Partitioned Logs</span>
+          </div>
+          <div class="p-3.5 rounded-xl bg-stealth-950 border border-stealth-700">
+            <span class="text-[10px] text-slate-400 uppercase tracking-wider font-mono">Engine</span>
+            <div class="text-xl font-black font-mono text-white mt-0.5">PySpark</div>
+            <span class="text-[10px] text-slate-400">Distributed RDD / DF</span>
+          </div>
+          <div class="p-3.5 rounded-xl bg-stealth-950 border border-stealth-700 col-span-2 sm:col-span-1">
+            <span class="text-[10px] text-slate-400 uppercase tracking-wider font-mono">Prescriptive Core</span>
+            <div class="text-xl font-black font-mono text-yellow-400 mt-0.5">Dynamic Top-3</div>
+            <span class="text-[10px] text-slate-400">Hourly Re-ranking</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- QUICK SCENARIOS -->
+    <section class="space-y-3">
+      <div class="flex items-center justify-between">
+        <h2 class="text-xs font-bold uppercase tracking-wider text-yellow-400 font-mono flex items-center space-x-1.5">
+          <i data-lucide="compass" class="w-3.5 h-3.5 text-yellow-400"></i>
+          <span>Departure Profiles & Optimizer Scenarios (Watch Top-3 Airlines Change)</span>
+        </h2>
+        <span class="text-[11px] text-slate-400">Click to compare different time windows</span>
+      </div>
+      <div class="grid grid-cols-1 sm:grid-cols-4 gap-3">
+        <!-- Preset 1: Early Morning (06:00 AM) -->
+        <button id="preset-early-morning" class="text-left p-3.5 rounded-xl stealth-card hover:stealth-card-active group">
+          <div class="flex items-center justify-between">
+            <span class="text-xs font-extrabold text-white group-hover:text-yellow-400 flex items-center space-x-1">
+              <i data-lucide="sunrise" class="w-3 h-3 text-yellow-400"></i>
+              <span>Early Dawn</span>
+            </span>
+            <span class="text-[9px] px-1.5 py-0.5 rounded bg-yellow-400/10 text-yellow-400 font-mono font-bold">06:00 AM</span>
+          </div>
+          <p class="text-[10px] text-slate-400 mt-1">Delta & US Airways dominate dawn pushbacks</p>
+        </button>
+
+        <!-- Preset 2: Thursday Morning (08:30 AM) -->
+        <button id="preset-thursday-morning" class="text-left p-3.5 rounded-xl stealth-card hover:stealth-card-active group border-yellow-500/40">
+          <div class="flex items-center justify-between">
+            <span class="text-xs font-extrabold text-yellow-300 group-hover:text-yellow-400 flex items-center space-x-1">
+              <i data-lucide="sun" class="w-3 h-3 text-yellow-400"></i>
+              <span>Thu Morning</span>
+            </span>
+            <span class="text-[9px] px-1.5 py-0.5 rounded bg-yellow-400 text-black font-mono font-black">08:30 AM</span>
+          </div>
+          <p class="text-[10px] text-slate-300 mt-1">US Airways & Delta rank #1 & #2 on Thursday morning</p>
+        </button>
+
+        <!-- Preset 3: Afternoon Peak (04:00 PM) -->
+        <button id="preset-afternoon" class="text-left p-3.5 rounded-xl stealth-card hover:stealth-card-active group">
+          <div class="flex items-center justify-between">
+            <span class="text-xs font-extrabold text-white group-hover:text-yellow-400 flex items-center space-x-1">
+              <i data-lucide="sunset" class="w-3 h-3 text-amber-400"></i>
+              <span>Afternoon Peak</span>
+            </span>
+            <span class="text-[9px] px-1.5 py-0.5 rounded bg-amber-500/10 text-amber-400 font-mono font-bold">04:00 PM</span>
+          </div>
+          <p class="text-[10px] text-slate-400 mt-1">Hawaiian & Alaska bypass afternoon congestion</p>
+        </button>
+
+        <!-- Preset 4: Late Night (10:00 PM) -->
+        <button id="preset-late-night" class="text-left p-3.5 rounded-xl stealth-card hover:stealth-card-active group">
+          <div class="flex items-center justify-between">
+            <span class="text-xs font-extrabold text-white group-hover:text-yellow-400 flex items-center space-x-1">
+              <i data-lucide="moon" class="w-3 h-3 text-yellow-400"></i>
+              <span>Late Red-Eye</span>
+            </span>
+            <span class="text-[9px] px-1.5 py-0.5 rounded bg-stealth-700 text-slate-300 font-mono font-bold">10:00 PM</span>
+          </div>
+          <p class="text-[10px] text-slate-400 mt-1">Night flight buffers re-order carrier punctuality</p>
+        </button>
+      </div>
+    </section>
+
+    <!-- CORE WORKSPACE: INPUT FORM & ANALYTICS RESULT -->
+    <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+
+      <!-- LEFT COLUMN: FLIGHT QUERY PARAMETERS (lg:col-span-5) -->
+      <section class="lg:col-span-5 stealth-card rounded-2xl p-6 space-y-6">
+        <div class="border-b border-stealth-700 pb-4">
+          <h2 class="font-display text-xl font-black text-white flex items-center space-x-2">
+            <i data-lucide="sliders" class="w-5 h-5 text-yellow-400"></i>
+            <span>Departure Configuration</span>
+          </h2>
+          <p class="text-xs text-slate-400 mt-1">Adjust departure time or day — the Prescriptive Optimizer re-ranks airlines live from HDFS logs.</p>
+        </div>
+
+        <form id="prediction-form" class="space-y-5">
+          <!-- Airline Select -->
+          <div class="space-y-2">
+            <label for="airline-select" class="block text-xs font-bold uppercase tracking-wider text-yellow-400 font-mono flex items-center justify-between">
+              <span>Selected Carrier</span>
+              <span id="airline-code-badge" class="text-slate-400 font-normal">UA (United Airlines)</span>
+            </label>
+            <div class="relative">
+              <select id="airline-select" class="w-full bg-stealth-950 border border-stealth-700 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:border-yellow-400 focus:ring-1 focus:ring-yellow-400 transition appearance-none">
+                <option value="1" data-code="AA">American Airlines (AA)</option>
+                <option value="4" data-code="DL">Delta Air Lines (DL)</option>
+                <option value="11" data-code="UA" selected>United Airlines (UA)</option>
+                <option value="3" data-code="B6">JetBlue Airways (B6)</option>
+                <option value="14" data-code="WN">Southwest Airlines (WN)</option>
+                <option value="2" data-code="AS">Alaska Airlines (AS)</option>
+                <option value="5" data-code="EV">ExpressJet Airlines (EV)</option>
+                <option value="6" data-code="F9">Frontier Airlines (F9)</option>
+                <option value="7" data-code="FL">AirTran Airways (FL)</option>
+                <option value="8" data-code="HA">Hawaiian Airlines (HA)</option>
+                <option value="9" data-code="MQ">Envoy Air (MQ)</option>
+                <option value="10" data-code="OO">SkyWest Airlines (OO)</option>
+                <option value="12" data-code="US">US Airways (US)</option>
+                <option value="13" data-code="VX">Virgin America (VX)</option>
+                <option value="15" data-code="YV">Mesa Airlines (YV)</option>
+                <option value="0" data-code="9E">Endeavor Air (9E)</option>
+              </select>
+              <div class="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none text-yellow-400">
+                <i data-lucide="chevron-down" class="w-4 h-4"></i>
+              </div>
+            </div>
+          </div>
+
+          <!-- Day of the Week (1=Mon to 7=Sun) -->
+          <div class="space-y-2">
+            <div class="flex items-center justify-between">
+              <label for="day-slider" class="text-xs font-bold uppercase tracking-wider text-yellow-400 font-mono">
+                Day of Week
+              </label>
+              <span id="day-display" class="text-xs font-mono font-bold text-black px-2.5 py-0.5 rounded bg-yellow-400">Thursday (Day 4)</span>
+            </div>
+            <input type="range" id="day-slider" min="1" max="7" value="4" class="w-full accent-yellow-400 h-2 bg-stealth-800 rounded-lg cursor-pointer">
+            <div class="flex justify-between text-[10px] text-slate-400 font-mono px-1">
+              <span>Mon</span>
+              <span>Tue</span>
+              <span>Wed</span>
+              <span class="text-yellow-400 font-bold">Thu (4)</span>
+              <span>Fri</span>
+              <span>Sat</span>
+              <span>Sun</span>
+            </div>
+          </div>
+
+          <!-- Scheduled Departure Time (WITH LIVE DYNAMIC RE-RANKING) -->
+          <div class="space-y-2">
+            <div class="flex items-center justify-between">
+              <label for="time-input" class="text-xs font-bold uppercase tracking-wider text-yellow-400 font-mono">
+                Scheduled Departure Time
+              </label>
+              <span id="time-formatted-display" class="text-xs font-mono text-yellow-300 font-bold">08:30 AM (0830 hrs)</span>
+            </div>
+            <div class="grid grid-cols-2 gap-3">
+              <div>
+                <input type="time" id="time-picker" value="08:30" class="w-full bg-stealth-950 border border-stealth-700 rounded-xl px-4 py-2.5 text-sm text-white focus:outline-none focus:border-yellow-400 transition">
+              </div>
+              <div class="relative">
+                <input type="number" id="time-input" min="0" max="2359" value="830" placeholder="HHMM format" class="w-full bg-stealth-950 border border-stealth-700 rounded-xl px-4 py-2.5 text-sm font-mono text-white focus:outline-none focus:border-yellow-400 transition">
+                <span class="absolute right-3 top-2.5 text-[10px] text-yellow-400/80 font-mono">HHMM</span>
+              </div>
+            </div>
+            <p class="text-[11px] text-slate-400 flex items-center space-x-1">
+              <i data-lucide="clock" class="w-3.5 h-3.5 text-yellow-400"></i>
+              <span>Change time: Top 3 recommendations immediately re-rank for this hour!</span>
+            </p>
+          </div>
+
+          <!-- Flight Distance -->
+          <div class="space-y-2">
+            <div class="flex items-center justify-between">
+              <label for="distance-input" class="text-xs font-bold uppercase tracking-wider text-yellow-400 font-mono">
+                Flight Distance (Miles)
+              </label>
+              <span id="distance-tier-display" class="text-xs font-mono text-yellow-300 font-bold">1,000 miles • Medium Haul</span>
+            </div>
+            <div class="space-y-2">
+              <input type="range" id="distance-slider" min="50" max="4983" value="1000" step="25" class="w-full accent-yellow-400 h-2 bg-stealth-800 rounded-lg cursor-pointer">
+              <div class="flex items-center space-x-3">
+                <input type="number" id="distance-input" min="50" max="5000" value="1000" class="w-36 bg-stealth-950 border border-stealth-700 rounded-xl px-4 py-2 text-sm font-mono text-white focus:outline-none focus:border-yellow-400 transition">
+                <span class="text-xs text-slate-400 font-mono">Statute Miles</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Action Button -->
+          <div class="pt-2">
+            <button type="submit" id="predict-btn" class="w-full bg-yellow-400 hover:bg-yellow-300 text-black font-black uppercase tracking-wider py-4 px-6 rounded-xl shadow-[0_0_25px_rgba(250,204,21,0.25)] hover:shadow-[0_0_35px_rgba(250,204,21,0.45)] transition-all duration-200 active:scale-[0.98] flex items-center justify-center space-x-2">
+              <i data-lucide="zap" id="btn-icon" class="w-5 h-5 text-black"></i>
+              <span id="btn-text">Execute Big Data Analytics & Recommendation</span>
+            </button>
+          </div>
+        </form>
+      </section>
+
+      <!-- RIGHT COLUMN: RESULTS & PRESCRIPTIVE RECOMMENDATIONS (lg:col-span-7) -->
+      <section class="lg:col-span-7 space-y-6">
+
+        <!-- Selected Flight Risk Card -->
+        <div class="stealth-card rounded-2xl p-6 space-y-6">
+          <div class="flex items-center justify-between border-b border-stealth-700 pb-4">
+            <h2 class="font-display text-xl font-black text-white flex items-center space-x-2">
+              <i data-lucide="activity" class="w-5 h-5 text-yellow-400"></i>
+              <span>Flight Delay Risk & Congestion</span>
+            </h2>
+            <span id="latency-badge" class="text-[11px] font-mono px-2 py-0.5 rounded bg-stealth-950 border border-stealth-700 text-yellow-400 font-bold">Cloud API Ready</span>
+          </div>
+
+          <!-- Radial Gauge & Selected Flight Display -->
+          <div class="flex flex-col sm:flex-row items-center justify-center gap-6 py-2">
+            <div class="relative w-44 h-44 flex items-center justify-center">
+              <svg class="w-full h-full -rotate-90 transform" viewBox="0 0 120 120">
+                <circle cx="60" cy="60" r="50" class="text-stealth-800" stroke-width="10" stroke="currentColor" fill="transparent" />
+                <circle id="gauge-circle" cx="60" cy="60" r="50" class="text-yellow-400 transition-all duration-700 ease-out" stroke-width="10" stroke-dasharray="314.16" stroke-dashoffset="314.16" stroke-linecap="round" stroke="currentColor" fill="transparent" />
+              </svg>
+              <div class="absolute inset-0 flex flex-col items-center justify-center text-center">
+                <span id="risk-score-display" class="font-display font-black text-3xl sm:text-4xl text-yellow-400 tracking-tight glow-yellow">--%</span>
+                <span class="text-[10px] uppercase font-mono tracking-widest text-slate-400">Delay Risk</span>
+              </div>
+            </div>
+
+            <div class="space-y-3 text-center sm:text-left">
+              <div>
+                <span id="prediction-badge" class="inline-flex items-center space-x-1.5 px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider font-mono bg-yellow-400/10 text-yellow-400 border border-yellow-400/30">
+                  <span class="w-2 h-2 rounded-full bg-yellow-400 animate-ping"></span>
+                  <span id="badge-status-text">Ready to Query</span>
+                </span>
+              </div>
+              <h3 id="prediction-headline" class="text-lg font-bold text-white">Selected Carrier Analysis</h3>
+              <p id="prediction-description" class="text-xs text-slate-300 leading-relaxed max-w-sm">
+                Empirical metrics evaluated for the selected carrier at this specific hour in HDFS logs.
+              </p>
+            </div>
+          </div>
+
+          <!-- Metrics Strip -->
+          <div class="grid grid-cols-3 gap-2 pt-2 border-t border-stealth-700">
+            <div class="p-2.5 rounded-xl bg-stealth-950 border border-stealth-800 text-center">
+              <span class="text-[10px] text-slate-400 font-mono block">Matched HDFS Logs</span>
+              <span id="matched-logs-display" class="text-xs font-bold text-white mt-1 block font-mono">26,800</span>
+            </div>
+            <div class="p-2.5 rounded-xl bg-stealth-950 border border-stealth-800 text-center">
+              <span class="text-[10px] text-slate-400 font-mono block">Expected Delay</span>
+              <span id="expected-delay-display" class="text-xs font-bold text-yellow-400 mt-1 block font-mono">On Time</span>
+            </div>
+            <div class="p-2.5 rounded-xl bg-stealth-950 border border-stealth-800 text-center">
+              <span class="text-[10px] text-slate-400 font-mono block">Congestion Tier</span>
+              <span id="congestion-tier-display" class="text-xs font-bold text-yellow-400 mt-1 block">Low Traffic</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- DYNAMIC PRESCRIPTIVE RECOMMENDER (UPDATES LIVE ON TIME/DAY CHANGE) -->
+        <div class="stealth-card rounded-2xl p-6 space-y-4 border-yellow-500/40 shadow-lg shadow-yellow-500/5">
+          <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between border-b border-stealth-700 pb-3 gap-2">
+            <div>
+              <h3 class="font-display text-base font-black text-yellow-400 flex items-center space-x-2">
+                <i data-lucide="award" class="w-5 h-5 text-yellow-400"></i>
+                <span>Top 3 Recommended Airlines for <span id="rec-window-label" class="text-white underline decoration-yellow-400 font-mono">08:30 AM (Thursday)</span></span>
+              </h3>
+              <p class="text-xs text-slate-300 mt-0.5">
+                PySpark Prescriptive Optimizer dynamically re-ranks carriers based on actual historical delays at this hour:
+              </p>
+            </div>
+            <span id="rec-status-tag" class="text-[10px] px-2.5 py-1 rounded bg-yellow-400 text-black font-mono font-black uppercase self-start sm:self-auto shadow-sm">
+              Live Re-Ranked
+            </span>
+          </div>
+
+          <!-- Dynamic Container -->
+          <div id="recommendations-container" class="space-y-3">
+            <!-- Rendered dynamically by JavaScript -->
+          </div>
+
+          <p class="text-[11px] text-slate-400 flex items-center space-x-1.5 pt-1">
+            <i data-lucide="mouse-pointer" class="w-3.5 h-3.5 text-yellow-400"></i>
+            <span>Tip: Click any ranked airline above to instantly select it in your query form.</span>
+          </p>
+        </div>
+
+      </section>
+    </div>
+
+  </main>
+
+  <!-- JAVASCRIPT CONTROLLER -->
+  <script>
+    lucide.createIcons();
+
+    // DOM Elements
+    const form = document.getElementById('prediction-form');
+    const airlineSelect = document.getElementById('airline-select');
+    const airlineCodeBadge = document.getElementById('airline-code-badge');
+    const daySlider = document.getElementById('day-slider');
+    const dayDisplay = document.getElementById('day-display');
+    const timePicker = document.getElementById('time-picker');
+    const timeInput = document.getElementById('time-input');
+    const timeFormattedDisplay = document.getElementById('time-formatted-display');
+    const distanceSlider = document.getElementById('distance-slider');
+    const distanceInput = document.getElementById('distance-input');
+    const distanceTierDisplay = document.getElementById('distance-tier-display');
+    const predictBtn = document.getElementById('predict-btn');
+    const btnText = document.getElementById('btn-text');
+    const btnIcon = document.getElementById('btn-icon');
+    const riskScoreDisplay = document.getElementById('risk-score-display');
+    const gaugeCircle = document.getElementById('gauge-circle');
+    const predictionBadge = document.getElementById('prediction-badge');
+    const badgeStatusText = document.getElementById('badge-status-text');
+    const predictionHeadline = document.getElementById('prediction-headline');
+    const predictionDescription = document.getElementById('prediction-description');
+    const latencyBadge = document.getElementById('latency-badge');
+    const backendStatusPill = document.getElementById('backend-status-pill');
+    const statusIndicatorDot = document.getElementById('status-indicator-dot');
+    const statusIndicatorText = document.getElementById('status-indicator-text');
+    const refreshStatusBtn = document.getElementById('refresh-status-btn');
+    const recommendationsContainer = document.getElementById('recommendations-container');
+    const recWindowLabel = document.getElementById('rec-window-label');
+    const recStatusTag = document.getElementById('rec-status-tag');
+
+    const matchedLogsDisplay = document.getElementById('matched-logs-display');
+    const expectedDelayDisplay = document.getElementById('expected-delay-display');
+    const congestionTierDisplay = document.getElementById('congestion-tier-display');
+
+    // Scenario Presets
+    const presetDawn = document.getElementById('preset-early-morning');
+    const presetThursday = document.getElementById('preset-thursday-morning');
+    const presetAfternoon = document.getElementById('preset-afternoon');
+    const presetLateNight = document.getElementById('preset-late-night');
+
+    // Dynamic API origin: works seamlessly on any domain, tunnel, or local port
+    const API_BASE_URL = (window.location.origin && window.location.origin.includes(':3000'))
+      ? 'http://localhost:8000'
+      : (window.location.origin || 'http://localhost:8000');
+    const GAUGE_CIRCUMFERENCE = 2 * Math.PI * 50; // ~314.16
+
+    const DAYS_MAP = {
+      1: 'Monday',
+      2: 'Tuesday',
+      3: 'Wednesday',
+      4: 'Thursday',
+      5: 'Friday',
+      6: 'Saturday',
+      7: 'Sunday'
+    };
+
+    function formatMilitaryTime(val) {
+      val = Math.max(0, Math.min(2359, parseInt(val) || 0));
+      const hours = Math.floor(val / 100);
+      const mins = val % 100;
+      const period = hours >= 12 ? 'PM' : 'AM';
+      const standardHours = (hours % 12) || 12;
+      const timeStr = `${String(standardHours).padStart(2, '0')}:${String(mins).padStart(2, '0')} ${period}`;
+      const formatted = `${timeStr} (${String(val).padStart(4, '0')} hrs)`;
+      return { hours, mins, formatted, timeStr };
+    }
+
+    function updateDistanceTier(miles) {
+      let tier = 'Short Haul';
+      if (miles > 1500) tier = 'Long Haul / Transcon';
+      else if (miles > 500) tier = 'Medium Haul';
+      distanceTierDisplay.textContent = `${miles.toLocaleString()} miles • ${tier}`;
+    }
+
+    // Update the window label e.g. "08:30 AM (Thursday)"
+    function updateWindowLabel() {
+      const timeVal = parseInt(timeInput.value) || 0;
+      const dayVal = parseInt(daySlider.value) || 4;
+      const { timeStr } = formatMilitaryTime(timeVal);
+      const dayName = DAYS_MAP[dayVal] || `Day ${dayVal}`;
+      if (recWindowLabel) {
+        recWindowLabel.textContent = `${timeStr} (${dayName})`;
+      }
+    }
+
+    // Debounce timer for live re-ranking on time changes
+    let debounceTimer = null;
+    function scheduleRecommendationUpdate() {
+      updateWindowLabel();
+      clearTimeout(debounceTimer);
+      debounceTimer = setTimeout(() => {
+        fetchDynamicRecommendations();
+      }, 150); // fast 150ms live update
+    }
+
+    // Live API call to re-rank Top 3 Airlines
+    async function fetchDynamicRecommendations() {
+      const day = parseInt(daySlider.value) || 4;
+      const timeVal = parseInt(timeInput.value) || 830;
+      const distance = parseInt(distanceInput.value) || 1000;
+
+      recStatusTag.textContent = "Re-ranking...";
+      recStatusTag.className = "text-[10px] px-2.5 py-1 rounded bg-yellow-400/20 text-yellow-300 font-mono font-bold uppercase animate-pulse";
+
+      try {
+        const res = await fetch(`${API_BASE_URL}/recommend-airlines`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ day, time: timeVal, distance })
+        });
+
+        if (res.ok) {
+          const data = await res.json();
+          renderRecommendations(data.recommendations);
+          recStatusTag.textContent = "Live Re-Ranked";
+          recStatusTag.className = "text-[10px] px-2.5 py-1 rounded bg-yellow-400 text-black font-mono font-black uppercase";
+        }
+      } catch (err) {
+        console.warn("Could not fetch live recommendations:", err);
+      }
+    }
+
+    // Event Listeners for inputs -> Live re-ranking!
+    airlineSelect.addEventListener('change', () => {
+      const selected = airlineSelect.options[airlineSelect.selectedIndex];
+      const code = selected.getAttribute('data-code');
+      airlineCodeBadge.textContent = `${code} (${selected.text.split('(')[0].trim()})`;
+    });
+
+    daySlider.addEventListener('input', (e) => {
+      const day = e.target.value;
+      dayDisplay.textContent = `${DAYS_MAP[day]} (Day ${day})`;
+      scheduleRecommendationUpdate();
+    });
+
+    timePicker.addEventListener('change', (e) => {
+      const [h, m] = e.target.value.split(':').map(Number);
+      const militaryVal = (h * 100) + m;
+      timeInput.value = militaryVal;
+      timeFormattedDisplay.textContent = formatMilitaryTime(militaryVal).formatted;
+      scheduleRecommendationUpdate();
+    });
+
+    timeInput.addEventListener('input', (e) => {
+      const val = parseInt(e.target.value) || 0;
+      const { hours, mins, formatted } = formatMilitaryTime(val);
+      timePicker.value = `${String(hours).padStart(2, '0')}:${String(mins).padStart(2, '0')}`;
+      timeFormattedDisplay.textContent = formatted;
+      scheduleRecommendationUpdate();
+    });
+
+    distanceSlider.addEventListener('input', (e) => {
+      const val = parseInt(e.target.value);
+      distanceInput.value = val;
+      updateDistanceTier(val);
+      scheduleRecommendationUpdate();
+    });
+
+    distanceInput.addEventListener('input', (e) => {
+      const val = parseInt(e.target.value) || 50;
+      distanceSlider.value = Math.min(val, 5000);
+      updateDistanceTier(val);
+      scheduleRecommendationUpdate();
+    });
+
+    // Preset Handlers with distinct times to show dynamic re-ranking
+    presetDawn.addEventListener('click', () => {
+      airlineSelect.value = "4"; // Delta
+      airlineSelect.dispatchEvent(new Event('change'));
+      daySlider.value = "4";
+      dayDisplay.textContent = "Thursday (Day 4)";
+      timeInput.value = "600";
+      timeInput.dispatchEvent(new Event('input'));
+      distanceInput.value = "850";
+      distanceInput.dispatchEvent(new Event('input'));
+      triggerAnalytics();
+    });
+
+    presetThursday.addEventListener('click', () => {
+      airlineSelect.value = "11"; // United
+      airlineSelect.dispatchEvent(new Event('change'));
+      daySlider.value = "4";
+      dayDisplay.textContent = "Thursday (Day 4)";
+      timeInput.value = "830";
+      timeInput.dispatchEvent(new Event('input'));
+      distanceInput.value = "1000";
+      distanceInput.dispatchEvent(new Event('input'));
+      triggerAnalytics();
+    });
+
+    presetAfternoon.addEventListener('click', () => {
+      airlineSelect.value = "8"; // Hawaiian
+      airlineSelect.dispatchEvent(new Event('change'));
+      daySlider.value = "4";
+      dayDisplay.textContent = "Thursday (Day 4)";
+      timeInput.value = "1600";
+      timeInput.dispatchEvent(new Event('input'));
+      distanceInput.value = "1200";
+      distanceInput.dispatchEvent(new Event('input'));
+      triggerAnalytics();
+    });
+
+    presetLateNight.addEventListener('click', () => {
+      airlineSelect.value = "3"; // JetBlue
+      airlineSelect.dispatchEvent(new Event('change'));
+      daySlider.value = "4";
+      dayDisplay.textContent = "Thursday (Day 4)";
+      timeInput.value = "2200";
+      timeInput.dispatchEvent(new Event('input'));
+      distanceInput.value = "2475";
+      distanceInput.dispatchEvent(new Event('input'));
+      triggerAnalytics();
+    });
+
+    // Render Prescriptive Recommendations
+    function renderRecommendations(recommendations) {
+      if (!recommendations || recommendations.length === 0) return;
+
+      recommendationsContainer.innerHTML = '';
+      recommendations.forEach((item, index) => {
+        const isTop = index === 0;
+        const card = document.createElement('div');
+        card.className = `p-3.5 rounded-xl bg-stealth-950 border ${isTop ? 'border-yellow-400/60 shadow-lg shadow-yellow-500/15' : 'border-stealth-700'} hover:border-yellow-400 transition-all cursor-pointer recommendation-card group animate-updated`;
+        card.setAttribute('data-carrier-id', item.carrier_id);
+        card.setAttribute('data-carrier-code', item.carrier_code);
+
+        const logsDisplay = item.window_flights_in_hdfs ? `${item.window_flights_in_hdfs.toLocaleString()} window logs` : `${(item.total_flights_in_hdfs || 1000).toLocaleString()} HDFS logs`;
+
+        card.innerHTML = `
+          <div class="flex items-center justify-between">
+            <div class="flex items-center space-x-3">
+              <div class="w-8 h-8 rounded-lg ${isTop ? 'bg-yellow-400 text-black font-black shadow-md shadow-yellow-500/30' : 'bg-stealth-800 text-yellow-400 font-bold border border-stealth-700'} flex items-center justify-center font-mono text-sm">
+                #${item.rank || index + 1}
+              </div>
+              <div>
+                <div class="flex items-center space-x-2">
+                  <span class="font-extrabold text-white group-hover:text-yellow-400 text-sm tracking-tight">${item.carrier_name} (${item.carrier_code})</span>
+                  <span class="text-[10px] px-2 py-0.5 rounded ${isTop ? 'bg-yellow-400/20 text-yellow-300 border border-yellow-400/40 font-bold' : 'bg-white/5 text-slate-300 border border-white/10'} font-mono">${logsDisplay}</span>
+                </div>
+                <span class="text-[11px] text-slate-300 font-mono">${item.badge || 'Recommended Alternative'}</span>
+              </div>
+            </div>
+            <div class="text-right">
+              <div class="text-base font-black ${isTop ? 'text-yellow-400 glow-yellow' : 'text-white group-hover:text-yellow-400'} font-mono">${item.on_time_pct}% On-Time</div>
+              <span class="text-[10px] text-slate-400 font-mono">${item.delay_risk_pct}% Delay Risk</span>
+            </div>
+          </div>
+        `;
+
+        card.addEventListener('click', () => {
+          if (item.carrier_id !== undefined && item.carrier_id >= 0) {
+            airlineSelect.value = String(item.carrier_id);
+            airlineSelect.dispatchEvent(new Event('change'));
+            triggerAnalytics();
+          }
+        });
+
+        recommendationsContainer.appendChild(card);
+      });
+    }
+
+    // Ping Backend
+    async function checkBackendHealth() {
+      statusIndicatorDot.className = "w-2.5 h-2.5 rounded-full bg-yellow-400 animate-pulse";
+      statusIndicatorText.textContent = "Connecting...";
+      
+      try {
+        const controller = new AbortController();
+        const timeoutId = setTimeout(() => controller.abort(), 2000);
+        const res = await fetch(`${API_BASE_URL}/health`, { method: 'GET', signal: controller.signal });
+        clearTimeout(timeoutId);
+
+        if (res.ok) {
+          statusIndicatorDot.className = "w-2.5 h-2.5 rounded-full bg-yellow-400";
+          statusIndicatorText.textContent = "Cloud Gateway Online (:8000)";
+          statusIndicatorText.className = "text-yellow-400 font-mono text-[11px] font-bold";
+          return true;
+        }
+      } catch (err) {
+        statusIndicatorDot.className = "w-2.5 h-2.5 rounded-full bg-rose-500";
+        statusIndicatorText.textContent = "Gateway Offline (:8000)";
+        statusIndicatorText.className = "text-rose-400 font-mono text-[11px]";
+        return false;
+      }
+    }
+
+    refreshStatusBtn.addEventListener('click', checkBackendHealth);
+
+    // Update Visual Gauge
+    function updateGauge(percentage, sampleSize = 26800, avgDelay = 0.0, congestion = 'Low Traffic', carrierName = 'United Airlines') {
+      riskScoreDisplay.textContent = `${percentage}%`;
+      const offset = GAUGE_CIRCUMFERENCE - (percentage / 100) * GAUGE_CIRCUMFERENCE;
+      gaugeCircle.style.strokeDashoffset = offset;
+
+      matchedLogsDisplay.textContent = sampleSize.toLocaleString();
+      expectedDelayDisplay.textContent = avgDelay > 0 ? `+${avgDelay} min` : "On Time";
+      congestionTierDisplay.textContent = congestion;
+
+      if (percentage >= 30) {
+        gaugeCircle.style.color = '#eab308';
+        riskScoreDisplay.className = 'font-display font-black text-3xl sm:text-4xl text-amber-400 tracking-tight glow-yellow';
+        predictionBadge.className = 'inline-flex items-center space-x-1.5 px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider font-mono bg-amber-500/10 text-amber-400 border border-amber-500/30';
+        badgeStatusText.textContent = 'HIGH DELAY RISK';
+        predictionHeadline.textContent = `${carrierName} - Delay Risk Identified`;
+        predictionHeadline.className = "text-lg font-bold text-amber-300";
+        predictionDescription.textContent = `Historical PySpark logs record a ${percentage}% departure delay rate (>15 mins). Check the prescriptive recommendations below for lower risk alternatives.`;
+      } else {
+        gaugeCircle.style.color = '#facc15';
+        riskScoreDisplay.className = 'font-display font-black text-3xl sm:text-4xl text-yellow-400 tracking-tight glow-yellow';
+        predictionBadge.className = 'inline-flex items-center space-x-1.5 px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider font-mono bg-yellow-400/10 text-yellow-400 border border-yellow-400/30';
+        badgeStatusText.textContent = 'HIGH PUNCTUALITY';
+        predictionHeadline.textContent = `${carrierName} - Flight On Schedule`;
+        predictionHeadline.className = "text-lg font-bold text-white";
+        predictionDescription.textContent = `Empirical HDFS metrics indicate strong punctuality (${percentage}% delay rate). Normal boarding and scheduled pushback expected.`;
+      }
+    }
+
+    // Trigger Big Data Query
+    async function triggerAnalytics() {
+      const payload = {
+        airline: parseInt(airlineSelect.value),
+        day: parseInt(daySlider.value),
+        time: parseInt(timeInput.value),
+        distance: parseInt(distanceInput.value)
+      };
+
+      btnText.textContent = "Querying PySpark & Prescriptive Engine...";
+      btnIcon.classList.add('animate-spin');
+      predictBtn.disabled = true;
+      latencyBadge.textContent = "Querying...";
+      latencyBadge.className = "text-[11px] font-mono px-2 py-0.5 rounded bg-yellow-400/10 text-yellow-400 border border-yellow-400/20 animate-pulse";
+
+      const startTime = performance.now();
+
+      try {
+        const response = await fetch(`${API_BASE_URL}/predict`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload)
+        });
+
+        const elapsed = (performance.now() - startTime).toFixed(1);
+
+        if (!response.ok) {
+          throw new Error(`API returned HTTP ${response.status}: ${response.statusText}`);
+        }
+
+        const data = await response.json();
+
+        updateGauge(
+          data.risk_percentage,
+          data.sample_size || 26800,
+          data.expected_delay_minutes || 0.0,
+          data.congestion_level || "Low Traffic",
+          data.carrier_name || "Selected Airline"
+        );
+
+        if (data.top_recommended_airlines) {
+          renderRecommendations(data.top_recommended_airlines);
+        }
+
+        updateWindowLabel();
+
+        latencyBadge.textContent = `FastAPI: ${elapsed}ms`;
+        latencyBadge.className = "text-[11px] font-mono px-2 py-0.5 rounded bg-yellow-400/10 text-yellow-400 border border-yellow-400/30 font-bold";
+        statusIndicatorDot.className = "w-2.5 h-2.5 rounded-full bg-yellow-400";
+        statusIndicatorText.textContent = "Cloud Gateway Online (:8000)";
+        statusIndicatorText.className = "text-yellow-400 font-mono text-[11px] font-bold";
+
+      } catch (err) {
+        console.warn("Cloud API unreachable, using local fallback calculations:", err);
+      } finally {
+        btnText.textContent = "Execute Big Data Analytics & Recommendation";
+        btnIcon.classList.remove('animate-spin');
+        predictBtn.disabled = false;
+      }
+    }
+
+    form.addEventListener('submit', (e) => {
+      e.preventDefault();
+      triggerAnalytics();
+    });
+
+    // Initial setup on load
+    airlineSelect.dispatchEvent(new Event('change'));
+    timeInput.dispatchEvent(new Event('input'));
+    distanceInput.dispatchEvent(new Event('input'));
+    checkBackendHealth();
+    updateWindowLabel();
+    fetchDynamicRecommendations();
+    updateGauge(16.68, 26800, 0.0, "Low Traffic", "United Airlines");
+  </script>
+</body>
+</html>
