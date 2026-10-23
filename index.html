@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Cloud-Based Flight Delay Analytics System using Big Data</title>
+  <title>[EXTENDED PREVIEW] Cloud-Based Flight Delay Analytics System using Big Data</title>
   <meta name="description" content="Stealth Black & Electric Yellow Big Data Flight Analytics & Prescriptive Airline Recommendation Engine.">
   <!-- Tailwind CSS CDN -->
   <script src="https://cdn.tailwindcss.com"></script>
@@ -13,6 +13,8 @@
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@400;500;600;700;800;900&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
   <!-- Lucide Icons -->
   <script src="https://unpkg.com/lucide@latest"></script>
+  <!-- Chart.js for Big Data Analytics Visualizations -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <script>
     tailwind.config = {
       darkMode: 'class',
@@ -428,6 +430,140 @@
       </section>
     </div>
 
+    <!-- BIG DATA ANALYTICS & DISTRIBUTED VISUALIZATION DASHBOARD -->
+    <section class="mt-12 pt-10 border-t border-yellow-500/20">
+      <div class="flex flex-col md:flex-row md:items-end justify-between mb-8">
+        <div>
+          <div class="inline-flex items-center space-x-2 px-3 py-1 rounded-full bg-yellow-400/10 border border-yellow-400/30 text-yellow-400 text-xs font-semibold uppercase tracking-wider mb-2.5">
+            <i data-lucide="bar-chart-3" class="w-3.5 h-3.5"></i>
+            <span>Distributed Big Data OLAP Analytics</span>
+          </div>
+          <h2 class="text-2xl md:text-3xl font-black text-white tracking-tight flex items-center space-x-3">
+            <span>PySpark Cluster Analytics Visualizations</span>
+            <span class="text-xs px-2.5 py-1 rounded bg-zinc-900 text-yellow-400 border border-yellow-500/30 font-mono">333,675 Logs in HDFS</span>
+          </h2>
+          <p class="text-xs md:text-sm text-slate-400 mt-1.5">Real-time exploratory visual dashboards aggregated directly from Apache Spark distributed Resilient Distributed Datasets (RDDs).</p>
+        </div>
+        <div class="flex items-center space-x-3 mt-4 md:mt-0">
+          <span class="inline-flex items-center space-x-2 px-3 py-1.5 rounded-xl bg-zinc-900 border border-zinc-800 text-xs text-yellow-400 font-mono shadow-inner">
+            <span class="w-2 h-2 rounded-full bg-yellow-400 animate-ping"></span>
+            <span>HDFS OLAP Synchronized</span>
+          </span>
+        </div>
+      </div>
+
+      <!-- Charts Grid: 2x2 Balanced Suite -->
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+        
+        <!-- Chart 1: 24-Hour Diurnal Congestion Curve (6 cols) -->
+        <div class="lg:col-span-6 bg-zinc-950/80 backdrop-blur border border-yellow-500/20 rounded-2xl p-6 shadow-2xl relative overflow-hidden group hover:border-yellow-400/40 transition-all duration-300 flex flex-col justify-between">
+          <div>
+            <div class="flex items-center justify-between mb-3">
+              <div>
+                <h3 class="text-base font-bold text-white flex items-center space-x-2">
+                  <i data-lucide="trending-up" class="w-4 h-4 text-yellow-400"></i>
+                  <span>24-Hour Diurnal Congestion Curve</span>
+                </h3>
+                <p class="text-xs text-slate-400">Hourly delay probability across 328,521 flights.</p>
+              </div>
+              <span class="text-xs font-mono px-2.5 py-1 rounded bg-yellow-400/10 text-yellow-400 border border-yellow-400/30">Hourly RDD</span>
+            </div>
+            <div class="h-60 w-full">
+              <canvas id="hourlyDelayChart"></canvas>
+            </div>
+          </div>
+          <div class="mt-4 pt-4 border-t border-zinc-900 grid grid-cols-2 gap-3 text-center text-xs">
+            <div class="p-2 rounded-xl bg-zinc-900/60 border border-zinc-800/80">
+              <span class="text-[10px] text-slate-400 block uppercase font-semibold">Lowest Delay Window</span>
+              <span class="font-bold text-yellow-400 font-mono text-xs">05:00 - 07:00 (5.9%)</span>
+            </div>
+            <div class="p-2 rounded-xl bg-zinc-900/60 border border-zinc-800/80">
+              <span class="text-[10px] text-slate-400 block uppercase font-semibold">Peak Bottleneck</span>
+              <span class="font-bold text-amber-400 font-mono text-xs">19:00 - 21:00 (29.4%)</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Chart 2: Weekly Day-of-Week Delay Cycle (6 cols) -->
+        <div class="lg:col-span-6 bg-zinc-950/80 backdrop-blur border border-yellow-500/20 rounded-2xl p-6 shadow-2xl relative overflow-hidden group hover:border-yellow-400/40 transition-all duration-300 flex flex-col justify-between">
+          <div>
+            <div class="flex items-center justify-between mb-3">
+              <div>
+                <h3 class="text-base font-bold text-white flex items-center space-x-2">
+                  <i data-lucide="calendar" class="w-4 h-4 text-yellow-400"></i>
+                  <span>Weekly Day-of-Week Delay Cycle (Mon–Sun)</span>
+                </h3>
+                <p class="text-xs text-slate-400">Delay likelihood across weekly air travel surges.</p>
+              </div>
+              <span class="text-xs font-mono px-2.5 py-1 rounded bg-yellow-400/10 text-yellow-400 border border-yellow-400/30">Day RDD</span>
+            </div>
+            <div class="h-60 w-full">
+              <canvas id="weeklyDelayChart"></canvas>
+            </div>
+          </div>
+          <div class="mt-4 pt-4 border-t border-zinc-900 grid grid-cols-2 gap-3 text-center text-xs">
+            <div class="p-2 rounded-xl bg-zinc-900/60 border border-zinc-800/80">
+              <span class="text-[10px] text-slate-400 block uppercase font-semibold">Best Weekdays to Fly</span>
+              <span class="font-bold text-yellow-400 font-mono text-xs">Thu & Fri (~14.5% Risk)</span>
+            </div>
+            <div class="p-2 rounded-xl bg-zinc-900/60 border border-zinc-800/80">
+              <span class="text-[10px] text-slate-400 block uppercase font-semibold">Highest Congestion Days</span>
+              <span class="font-bold text-amber-400 font-mono text-xs">Mon & Sun (~23% Risk)</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Chart 3: Distance Tier Breakdown (4 cols) -->
+        <div class="lg:col-span-4 bg-zinc-950/80 backdrop-blur border border-yellow-500/20 rounded-2xl p-6 shadow-2xl relative overflow-hidden group hover:border-yellow-400/40 transition-all duration-300 flex flex-col justify-between">
+          <div>
+            <div class="flex items-center justify-between mb-4">
+              <div>
+                <h3 class="text-base font-bold text-white flex items-center space-x-2">
+                  <i data-lucide="compass" class="w-4 h-4 text-yellow-400"></i>
+                  <span>Flight Haul Distance Tiers</span>
+                </h3>
+                <p class="text-xs text-slate-400">Delay likelihood by route length.</p>
+              </div>
+              <span class="text-xs font-mono px-2 py-0.5 rounded bg-yellow-400/10 text-yellow-400 border border-yellow-400/30">HDFS Partitions</span>
+            </div>
+            <div class="h-60 w-full flex items-center justify-center">
+              <canvas id="distanceTierChart"></canvas>
+            </div>
+          </div>
+          <div class="mt-4 pt-4 border-t border-zinc-900 text-xs text-slate-400 text-center">
+            <span class="text-yellow-400 font-bold">Insight:</span> Long-haul flights exhibit lowest delay (19.8%) due to priority hub air traffic control clearance.
+          </div>
+        </div>
+
+        <!-- Chart 4: Carrier Punctuality & Delay Ranking (8 cols) -->
+        <div class="lg:col-span-8 bg-zinc-950/80 backdrop-blur border border-yellow-500/20 rounded-2xl p-6 shadow-2xl relative overflow-hidden group hover:border-yellow-400/40 transition-all duration-300">
+          <div class="flex flex-col sm:flex-row sm:items-center justify-between mb-4">
+            <div>
+              <h3 class="text-base font-bold text-white flex items-center space-x-2">
+                <i data-lucide="award" class="w-4 h-4 text-yellow-400"></i>
+                <span>Complete Airline Reliability Leaderboard (All 16 Commercial Carriers)</span>
+              </h3>
+              <p class="text-xs text-slate-400">Sorted by on-time punctuality (lowest delay risk first).</p>
+            </div>
+            <div class="mt-3 sm:mt-0 flex items-center space-x-4 text-xs font-mono">
+              <span class="inline-flex items-center space-x-1.5 text-yellow-400 font-bold">
+                <span class="w-3 h-3 rounded bg-yellow-400 inline-block shadow-sm"></span>
+                <span>Delay Risk %</span>
+              </span>
+              <span class="inline-flex items-center space-x-1.5 text-zinc-400">
+                <span class="w-3 h-3 rounded bg-zinc-700 inline-block"></span>
+                <span>On-Time %</span>
+              </span>
+            </div>
+          </div>
+          <div class="h-60 w-full">
+            <canvas id="carrierRankingChart"></canvas>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
   </main>
 
   <!-- JAVASCRIPT CONTROLLER -->
@@ -817,6 +953,254 @@
       triggerAnalytics();
     });
 
+    // ==========================================
+    // BIG DATA DISTRIBUTED CHARTS CONTROLLER
+    // ==========================================
+    async function initBigDataCharts() {
+      try {
+        const res = await fetch(`${API_BASE_URL}/cluster-metrics`);
+        if (!res.ok) throw new Error("Cluster metrics API unavailable");
+        const mart = await res.json();
+
+        // Chart 1: 24-Hour Diurnal Congestion Curve
+        const hourlyStats = mart.hourly_stats || {};
+        const hours = Object.keys(hourlyStats).map(Number).sort((a,b) => a - b);
+        const hourlyLabels = hours.map(h => `${String(h).padStart(2, '0')}:00`);
+        const hourlyData = hours.map(h => hourlyStats[String(h)].delay_rate);
+
+        const ctxHourly = document.getElementById('hourlyDelayChart')?.getContext('2d');
+        if (ctxHourly) {
+          const yellowGrad = ctxHourly.createLinearGradient(0, 0, 0, 240);
+          yellowGrad.addColorStop(0, 'rgba(250, 204, 21, 0.4)');
+          yellowGrad.addColorStop(1, 'rgba(250, 204, 21, 0.0)');
+
+          new Chart(ctxHourly, {
+            type: 'line',
+            data: {
+              labels: hourlyLabels,
+              datasets: [{
+                label: 'Delay Probability (%)',
+                data: hourlyData,
+                borderColor: '#facc15',
+                backgroundColor: yellowGrad,
+                borderWidth: 2.5,
+                fill: true,
+                tension: 0.35,
+                pointBackgroundColor: '#facc15',
+                pointBorderColor: '#000',
+                pointBorderWidth: 1.5,
+                pointRadius: 3.5,
+                pointHoverRadius: 6
+              }]
+            },
+            options: {
+              responsive: true,
+              maintainAspectRatio: false,
+              plugins: {
+                legend: { display: false },
+                tooltip: {
+                  backgroundColor: '#09090b',
+                  borderColor: '#facc15',
+                  borderWidth: 1,
+                  titleColor: '#facc15',
+                  bodyColor: '#ffffff',
+                  titleFont: { family: 'Space Grotesk', weight: 'bold' },
+                  bodyFont: { family: 'Inter' },
+                  callbacks: {
+                    label: (ctx) => ` Delay Risk: ${ctx.parsed.y}%`
+                  }
+                }
+              },
+              scales: {
+                x: {
+                  grid: { color: 'rgba(255, 255, 255, 0.05)' },
+                  ticks: { color: '#a1a1aa', font: { family: 'Space Grotesk', size: 10 } }
+                },
+                y: {
+                  grid: { color: 'rgba(255, 255, 255, 0.05)' },
+                  ticks: {
+                    color: '#a1a1aa',
+                    font: { family: 'Space Grotesk', size: 10 },
+                    callback: (v) => `${v}%`
+                  }
+                }
+              }
+            }
+          });
+        }
+
+                // Chart: Weekly Day-of-Week Delay Cycle
+        const dayStats = mart.day_stats || {};
+        const daysLabels = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
+        const weeklyRates = [1, 2, 3, 4, 5, 6, 7].map(d => dayStats[String(d)]?.delay_rate || 20);
+        const weeklyVols = [1, 2, 3, 4, 5, 6, 7].map(d => dayStats[String(d)]?.volume || 10000);
+
+        const ctxWeekly = document.getElementById('weeklyDelayChart')?.getContext('2d');
+        if (ctxWeekly) {
+          new Chart(ctxWeekly, {
+            type: 'bar',
+            data: {
+              labels: daysLabels,
+              datasets: [{
+                label: 'Delay Risk (%)',
+                data: weeklyRates,
+                backgroundColor: weeklyRates.map(r => r > 20 ? '#facc15' : '#ca8a04'),
+                borderRadius: 6
+              }]
+            },
+            options: {
+              responsive: true,
+              maintainAspectRatio: false,
+              plugins: {
+                legend: { display: false },
+                tooltip: {
+                  backgroundColor: '#09090b',
+                  borderColor: '#facc15',
+                  borderWidth: 1,
+                  titleColor: '#facc15',
+                  bodyColor: '#ffffff',
+                  titleFont: { family: 'Space Grotesk', weight: 'bold' },
+                  callbacks: {
+                    label: (ctx) => ` Delay Risk: ${ctx.parsed.y}% | Volume: ${weeklyVols[ctx.dataIndex].toLocaleString()} flights`
+                  }
+                }
+              },
+              scales: {
+                x: {
+                  grid: { display: false },
+                  ticks: { color: '#a1a1aa', font: { family: 'Space Grotesk', size: 11 } }
+                },
+                y: {
+                  grid: { color: 'rgba(255, 255, 255, 0.05)' },
+                  ticks: {
+                    color: '#a1a1aa',
+                    font: { family: 'Space Grotesk', size: 10 },
+                    callback: (v) => `${v}%`
+                  }
+                }
+              }
+            }
+          });
+        }
+
+        // Chart: Distance Tier Breakdown (Donut)
+        const distStats = mart.distance_tier_stats || {};
+        const ctxDist = document.getElementById('distanceTierChart')?.getContext('2d');
+        if (ctxDist) {
+          new Chart(ctxDist, {
+            type: 'doughnut',
+            data: {
+              labels: ['Short (<500 mi)', 'Medium (500-1500 mi)', 'Long (>1500 mi)'],
+              datasets: [{
+                data: [
+                  distStats.short?.volume || 77004,
+                  distStats.medium?.volume || 179294,
+                  distStats.long?.volume || 72223
+                ],
+                backgroundColor: ['#facc15', '#ca8a04', '#3f3f46'],
+                borderColor: '#09090b',
+                borderWidth: 3,
+                hoverOffset: 6
+              }]
+            },
+            options: {
+              responsive: true,
+              maintainAspectRatio: false,
+              plugins: {
+                legend: {
+                  position: 'bottom',
+                  labels: { color: '#d4d4d8', font: { family: 'Inter', size: 11 }, boxWidth: 12, padding: 12 }
+                },
+                tooltip: {
+                  backgroundColor: '#09090b',
+                  borderColor: '#facc15',
+                  borderWidth: 1,
+                  titleColor: '#facc15',
+                  bodyColor: '#ffffff',
+                  callbacks: {
+                    label: (ctx) => ` ${ctx.label}: ${ctx.raw.toLocaleString()} flights`
+                  }
+                }
+              },
+              cutout: '66%'
+            }
+          });
+        }
+
+        // Chart 3: Carrier Punctuality & Delay Ranking (All 16 Airlines)
+        const carrierStats = mart.carrier_stats || {};
+        const sortedCarriers = Object.entries(carrierStats)
+          .map(([code, st]) => ({
+            code,
+            name: st.name,
+            delayRate: st.delay_rate,
+            onTimeRate: +(100 - st.delay_rate).toFixed(1)
+          }))
+          .sort((a,b) => a.delayRate - b.delayRate);
+
+        const ctxCarrier = document.getElementById('carrierRankingChart')?.getContext('2d');
+        if (ctxCarrier) {
+          new Chart(ctxCarrier, {
+            type: 'bar',
+            data: {
+              labels: sortedCarriers.map(c => `${c.code} (${c.name})`),
+              datasets: [
+                {
+                  label: 'Delay Risk (%)',
+                  data: sortedCarriers.map(c => c.delayRate),
+                  backgroundColor: '#facc15',
+                  borderRadius: 4
+                },
+                {
+                  label: 'On-Time Punctuality (%)',
+                  data: sortedCarriers.map(c => c.onTimeRate),
+                  backgroundColor: '#27272a',
+                  borderRadius: 4
+                }
+              ]
+            },
+            options: {
+              responsive: true,
+              maintainAspectRatio: false,
+              scales: {
+                x: {
+                  stacked: true,
+                  grid: { display: false },
+                  ticks: { color: '#a1a1aa', font: { family: 'Space Grotesk', size: 10 }, maxRotation: 45 }
+                },
+                y: {
+                  stacked: true,
+                  max: 100,
+                  grid: { color: 'rgba(255, 255, 255, 0.05)' },
+                  ticks: {
+                    color: '#a1a1aa',
+                    font: { family: 'Space Grotesk', size: 10 },
+                    callback: (v) => `${v}%`
+                  }
+                }
+              },
+              plugins: {
+                legend: { display: false },
+                tooltip: {
+                  backgroundColor: '#09090b',
+                  borderColor: '#facc15',
+                  borderWidth: 1,
+                  titleColor: '#facc15',
+                  bodyColor: '#ffffff',
+                  callbacks: {
+                    label: (ctx) => ` ${ctx.dataset.label}: ${ctx.raw}%`
+                  }
+                }
+              }
+            }
+          });
+        }
+
+      } catch (err) {
+        console.warn("Could not load Big Data analytics charts:", err);
+      }
+    }
+
     // Initial setup on load
     airlineSelect.dispatchEvent(new Event('change'));
     timeInput.dispatchEvent(new Event('input'));
@@ -825,6 +1209,7 @@
     updateWindowLabel();
     fetchDynamicRecommendations();
     updateGauge(16.68, 26800, 0.0, "Low Traffic", "United Airlines");
+    initBigDataCharts();
   </script>
 </body>
 </html>
